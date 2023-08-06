@@ -6,4 +6,11 @@ sudo wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /us
 
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 
-sudo apt update && sudo apt install vagrant
+sudo apt update -y
+sudo apt install vagrant -y
+
+echo "deb http://deb.debian.org/debian/ sid main contrib non-free" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+
+sudo apt update -y
+sudo apt install virtualbox -y
+sudo apt install virtualbox-ext-pack -y
