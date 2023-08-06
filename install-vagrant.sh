@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install wget gpg
+sudo apt install wget gpg rsync
 
 sudo wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 
