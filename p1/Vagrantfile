@@ -9,6 +9,8 @@ Vagrant.configure("2") do |config|
 		sudo apt-get install net-tools -y
 	SHELL
 
+	# TODO: Get rsa for root
+
 	config.vm.define "acoezardS" do |control|
 		control.vm.hostname = "acoezardS"
 		control.vm.network "private_network", ip: "192.168.56.110"
@@ -28,7 +30,7 @@ Vagrant.configure("2") do |config|
 
 			curl -sfL https://get.k3s.io | sh -
 
-			alias k="kubectl" >> /home/vagrant/.bashrc
+			echo "alias k='kubectl'" >> /home/vagrant/.bashrc
 		SHELL
 	end
 
@@ -41,5 +43,19 @@ Vagrant.configure("2") do |config|
 			v.memory = 1024
 			v.cpus = 1
 		end
+
+		control.vm.provision "shell", privileged: true, inline: <<-SHELL
+			echo "127.0.0.1 $(hostname)" >> /etc/hosts
+			echo "192.168.42.110 acoezardS" >> /etc/hosts
+
+			scp -o StrictHostKeyChecking=no root@acoezardS:/var/lib/rancher/k3s/server/token /tmp/token
+
+			export INSTALL_K3S_VERSION="v1.22.9+k3s1"
+			export INSTALL_K3S_EXEC="agent --server https://acoezardS:6443 --token-file /tmp/token --node-ip=192.168.42.110"
+
+			curl -sfL https://get.k3s.io | sh -
+
+			echo "alias k='kubectl'" >> /home/vagrant/.bashrc
+		SHELL
 	end
 end
