@@ -22,11 +22,6 @@ Vagrant.configure("2") do |config|
 			file.destination = "/tmp/deployment.yaml"
 		end
 
-		control.vm.provision "file" do |file|
-			file.source = "./router.yaml"
-			file.destination = "/tmp/router.yaml"
-		end
-
 		control.vm.provision "shell", privileged: true, inline: <<-SHELL
 			echo "127.0.0.1 $(hostname)" >> /etc/hosts
 
@@ -39,7 +34,6 @@ Vagrant.configure("2") do |config|
 			echo "alias k='kubectl'" >> /home/vagrant/.bashrc
 
 			kubectl apply -f /tmp/deployment.yaml
-			kubectl apply -f /tmp/router.yaml
 		SHELL
 	end
 end
