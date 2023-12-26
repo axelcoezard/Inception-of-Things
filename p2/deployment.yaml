@@ -16,9 +16,16 @@ spec:
     spec:
       containers:
         - name: app-one
-          image: docker.io/nginx:alpine
+          image: nginx:1.16.1
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: shared-data
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: shared-data
+          configMap:
+            name: app-one-html
 
 apiVersion: apps/v1
 kind: Deployment
@@ -38,7 +45,7 @@ spec:
     spec:
       containers:
         - name: app-two
-          image: docker.io/nginx:alpine
+          image: nginx:1.16.1
           ports:
             - containerPort: 80
 
@@ -60,10 +67,9 @@ spec:
     spec:
       containers:
         - name: app-three
-          image: docker.io/nginx:alpine
+          image: nginx:1.16.1
           ports:
             - containerPort: 80
-
 
 apiVersion: apps/v1
 kind: Service
@@ -73,8 +79,10 @@ spec:
   selector:
     app: app-one
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
+      targetPort: 80
   clusterIP: 10.43.171.213
 
 apiVersion: apps/v1
@@ -85,8 +93,10 @@ spec:
   selector:
     app: app-two
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
+      targetPort: 80
   clusterIP: 10.43.193.160
 
 apiVersion: apps/v1
@@ -97,8 +107,10 @@ spec:
   selector:
     app: app-three
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
+      targetPort: 80
   clusterIP: 10.43.229.156
 
 apiVersion: networking.k8s.io/v1
@@ -127,8 +139,7 @@ spec:
             name: app-two
             port:
               number: 80
-  - host: app3.com
-    http:
+  - http:
       paths:
       - path: /
         pathType: Prefix
