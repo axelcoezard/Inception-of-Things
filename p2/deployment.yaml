@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-one
+  labels:
+    app: app-one
 spec:
   replicas: 1
   selector:
@@ -22,6 +24,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-two
+  labels:
+    app: app-two
 spec:
   replicas: 3
   selector:
@@ -42,6 +46,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-three
+  labels:
+    app: app-three
 spec:
   replicas: 1
   selector:
@@ -57,6 +63,43 @@ spec:
           image: docker.io/nginx:alpine
           ports:
             - containerPort: 80
+
+
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: app-one
+spec:
+  selector:
+    app: app-one
+  ports:
+    - protocol: TCP
+      port: 80
+  clusterIP: 10.43.171.213
+
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: app-two
+spec:
+  selector:
+    app: app-two
+  ports:
+    - protocol: TCP
+      port: 80
+  clusterIP: 10.43.193.160
+
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: app-three
+spec:
+  selector:
+    app: app-three
+  ports:
+    - protocol: TCP
+      port: 80
+  clusterIP: 10.43.229.156
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
