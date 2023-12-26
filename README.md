@@ -8,4 +8,4 @@ Mon projet Inception of Things de 42, fait avec [Alois](https://github.com/asebr
 ## Quelques infos
 - Ajouter `user` aux sudoers: `usermod -aG sudo $USER`
 - Ajouter `username  ALL=(ALL) NOPASSWD:ALL` au fichier `/etc/sudoers` via `visudo`
-- Changer `Port 21` en `Port 4242` dans `/etc/ssh/sshd_config`
+- Changer `Port 21` en `Port 4242` dans `/etc/ssh/sshd_config` puis redemarer ssh via `service ssh restart`
