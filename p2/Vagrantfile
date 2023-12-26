@@ -13,10 +13,18 @@ Vagrant.configure("2") do |config|
 
 		control.vm.provider "virtualbox" do |v|
 			v.customize ["modifyvm", :id, "--name", "acoezardS"]
-			v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-			v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
 			v.memory = 2048
 			v.cpus = 1
+		end
+
+		control.vm.provision "file" do |file|
+			file.source = "./deployment.yaml"
+			file.destination = "/tmp/deployment.yaml"
+		end
+
+		control.vm.provision "file" do |file|
+			file.source = "./router.yaml"
+			file.destination = "/tmp/router.yaml"
 		end
 
 		control.vm.provision "shell", privileged: true, inline: <<-SHELL
@@ -30,7 +38,8 @@ Vagrant.configure("2") do |config|
 
 			echo "alias k='kubectl'" >> /home/vagrant/.bashrc
 
-			k apply -f deployment.yaml
+			kubectl apply -f /tmp/deployment.yaml
+			kubectl apply -f /tmp/router.yaml
 		SHELL
 	end
 end
