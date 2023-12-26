@@ -1,19 +1,11 @@
 Vagrant.configure("2") do |config|
 	config.vm.box = "hashicorp/bionic64"
-	# config.vm.box = "debian/jessie64"
-	# config.vm.box_url = "https://app.vagrantup.com/debian/boxes/jessie64"
 
 	config.vm.provision "shell", inline: <<-SHELL
 		export DEBIAN_FRONTEND=noninteractive
 		sudo apt-get update -y
 		sudo apt-get install net-tools -y
-
-		sudo echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config
-		sudo passwd -d root
-		sudo service ssh restart
 	SHELL
-
-	# TODO: Get rsa for root
 
 	config.vm.define "acoezardS" do |control|
 		control.vm.hostname = "acoezardS"
@@ -27,7 +19,31 @@ Vagrant.configure("2") do |config|
 			v.cpus = 1
 		end
 
+		control.vm.provision "file" do |file|
+			file.source = "~/.ssh/id_rsa"
+			file.destination = "/tmp/id_rsa"
+		end
+
+		control.vm.provision "file" do |file|
+			file.source = "~/.ssh/id_rsa.pub"
+			file.destination = "/tmp/id_rsa.pub"
+		end
+
 		control.vm.provision "shell", privileged: true, inline: <<-SHELL
+			mkdir -p /root/.ssh
+			mv /tmp/id_rsa /root/.ssh/id_rsa
+			mv /tmp/id_rsa.pub /root/.ssh/id_rsa.pub
+
+			chmod 600 /root/.ssh/id_rsa
+			chown root:root /root/.ssh/id_rsa
+
+			chmod 600 /root/.ssh/id_rsa.pub
+			chown root:root /root/.ssh/id_rsa.pub
+
+			cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+			chmod 600 /root/.ssh/authorized_keys
+			chown root:root /root/.ssh/authorized_keys
+
 			echo "127.0.0.1 $(hostname)" >> /etc/hosts
 			echo "192.168.56.111 asebrechSW" >> /etc/hosts
 
@@ -53,7 +69,31 @@ Vagrant.configure("2") do |config|
 			v.cpus = 1
 		end
 
+		control.vm.provision "file" do |file|
+			file.source = "~/.ssh/id_rsa"
+			file.destination = "/tmp/id_rsa"
+		end
+
+		control.vm.provision "file" do |file|
+			file.source = "~/.ssh/id_rsa.pub"
+			file.destination = "/tmp/id_rsa.pub"
+		end
+
 		control.vm.provision "shell", privileged: true, inline: <<-SHELL
+			mkdir -p /root/.ssh
+			mv /tmp/id_rsa /root/.ssh/id_rsa
+			mv /tmp/id_rsa.pub /root/.ssh/id_rsa.pub
+
+			chmod 600 /root/.ssh/id_rsa
+			chown root:root /root/.ssh/id_rsa
+
+			chmod 600 /root/.ssh/id_rsa.pub
+			chown root:root /root/.ssh/id_rsa.pub
+
+			cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+			chmod 600 /root/.ssh/authorized_keys
+			chown root:root /root/.ssh/authorized_keys
+
 			echo "127.0.0.1 $(hostname)" >> /etc/hosts
 			echo "192.168.56.110 acoezardS" >> /etc/hosts
 
