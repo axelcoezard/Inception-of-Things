@@ -20,12 +20,12 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: shared-data
+            - name: app-one-shared-data
               mountPath: /usr/share/nginx/html
       volumes:
-        - name: shared-data
+        - name: app-one-shared-data
           configMap:
-            name: app-one-html
+            name: app-one-config
 
 apiVersion: apps/v1
 kind: Deployment

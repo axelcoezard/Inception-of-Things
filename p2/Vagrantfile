@@ -19,12 +19,12 @@ Vagrant.configure("2") do |config|
 
 		control.vm.provision "file" do |file|
 			file.source = "./deployment.yaml"
-			file.destination = "/tmp/deployment.yaml"
+			file.destination = "/home/vagrant/deployment.yaml"
 		end
 
 		control.vm.provision "file" do |file|
 			file.source = "./app1"
-			file.destination = "/tmp/app1"
+			file.destination = "/home/vagrant/app1"
 		end
 
 		control.vm.provision "shell", privileged: true, inline: <<-SHELL
@@ -38,11 +38,7 @@ Vagrant.configure("2") do |config|
 
 			echo "alias k='kubectl'" >> /home/vagrant/.bashrc
 
-			mv /tmp/deployment.yaml /home/vagrant/deployment.yaml
-			mv /tmp/app1 /home/vagrant/app1
-
-			kubectl create configmap app-one-html --from-file=/home/vagrant/app1/index.html
-
+			kubectl create configmap app-one-config --from-file=/home/vagrant/app1/index.html
 			kubectl apply -f /home/vagrant/deployment.yaml
 		SHELL
 	end
