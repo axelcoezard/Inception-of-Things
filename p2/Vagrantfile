@@ -38,7 +38,9 @@ Vagrant.configure("2") do |config|
 
 			echo "alias k='kubectl'" >> /home/vagrant/.bashrc
 
-			kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+			kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+
+			kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 
 			kubectl apply -f /home/vagrant/app-one.yaml
 			kubectl apply -f /home/vagrant/ingress.yaml

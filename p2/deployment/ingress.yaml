@@ -4,7 +4,8 @@ metadata:
   name: app-ingress
 spec:
   rules:
-  - http:
+  - host: app1.com
+    http:
       paths:
       - path: /
         pathType: Prefix
@@ -13,6 +14,25 @@ spec:
             name: app-one
             port:
               number: 80
+  ingressClassName: nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+spec:
+  rules:
+  - host: app2.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-two
+            port:
+              number: 80
+  ingressClassName: nginx
   # - host: app2.com
   #   http:
   #     paths:
