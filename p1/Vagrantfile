@@ -1,54 +1,20 @@
 Vagrant.configure("2") do |config|
 	config.vm.box = "hashicorp/bionic64"
 
-	config.vm.provision "shell", inline: <<-SHELL
-		export DEBIAN_FRONTEND=noninteractive
-		sudo apt-get update -y
-		sudo apt-get install net-tools -y
-	SHELL
-
-	config.vm.define "acoezardS" do |control|
-		control.vm.hostname = "acoezardS"
+	config.vm.define "acoezarS" do |control|
+		control.vm.hostname = "acoezarS"
 		control.vm.network "private_network", ip: "192.168.56.110"
 
 		control.vm.provider "virtualbox" do |v|
-			v.customize ["modifyvm", :id, "--name", "acoezardS"]
-			v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-			v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-			v.memory = 1024
+			v.name = "acoezarS"
+			v.memory = 2048
 			v.cpus = 1
 		end
 
-		control.vm.provision "file" do |file|
-			file.source = "~/.ssh/id_rsa"
-			file.destination = "/tmp/id_rsa"
-		end
-
-		control.vm.provision "file" do |file|
-			file.source = "~/.ssh/id_rsa.pub"
-			file.destination = "/tmp/id_rsa.pub"
-		end
-
-		control.vm.provision "shell", privileged: true, inline: <<-SHELL
-			mkdir -p /root/.ssh
-			mv /tmp/id_rsa /root/.ssh/id_rsa
-			mv /tmp/id_rsa.pub /root/.ssh/id_rsa.pub
-
-			chmod 600 /root/.ssh/id_rsa
-			chown root:root /root/.ssh/id_rsa
-
-			chmod 600 /root/.ssh/id_rsa.pub
-			chown root:root /root/.ssh/id_rsa.pub
-
-			cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
-			chmod 600 /root/.ssh/authorized_keys
-			chown root:root /root/.ssh/authorized_keys
-
-			echo "127.0.0.1 $(hostname)" >> /etc/hosts
-			echo "192.168.56.111 asebrechSW" >> /etc/hosts
-
+		control.vm.provision "shell", privileged: false, inline: <<-SHELL
 			export K3S_KUBECONFIG_MODE="644"
-			export INSTALL_K3S_VERSION="v1.22.9+k3s1"
+			export K3S_TOKEN="acoezardS_password"
+			export KUBECONFIG=/vagrant/k3s.yaml
 			export INSTALL_K3S_EXEC="server --advertise-address=192.168.56.110 --node-ip=192.168.56.110"
 
 			curl -sfL https://get.k3s.io | sh -
@@ -62,45 +28,17 @@ Vagrant.configure("2") do |config|
 		control.vm.network "private_network", ip: "192.168.56.111"
 
 		control.vm.provider "virtualbox" do |v|
-			v.customize ["modifyvm", :id, "--name", "asebrechSW"]
-			v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-			v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-			v.memory = 1024
+			v.name = "asebrechSW"
+			v.memory = 2048
 			v.cpus = 1
 		end
 
-		control.vm.provision "file" do |file|
-			file.source = "~/.ssh/id_rsa"
-			file.destination = "/tmp/id_rsa"
-		end
-
-		control.vm.provision "file" do |file|
-			file.source = "~/.ssh/id_rsa.pub"
-			file.destination = "/tmp/id_rsa.pub"
-		end
-
-		control.vm.provision "shell", privileged: true, inline: <<-SHELL
-			mkdir -p /root/.ssh
-			mv /tmp/id_rsa /root/.ssh/id_rsa
-			mv /tmp/id_rsa.pub /root/.ssh/id_rsa.pub
-
-			chmod 600 /root/.ssh/id_rsa
-			chown root:root /root/.ssh/id_rsa
-
-			chmod 600 /root/.ssh/id_rsa.pub
-			chown root:root /root/.ssh/id_rsa.pub
-
-			cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
-			chmod 600 /root/.ssh/authorized_keys
-			chown root:root /root/.ssh/authorized_keys
-
-			echo "127.0.0.1 $(hostname)" >> /etc/hosts
-			echo "192.168.56.110 acoezardS" >> /etc/hosts
-
-			scp -o StrictHostKeyChecking=no root@acoezardS:/var/lib/rancher/k3s/server/token /tmp/token
-
-			export INSTALL_K3S_VERSION="v1.22.9+k3s1"
-			export INSTALL_K3S_EXEC="agent --server https://acoezardS:6443 --token-file /tmp/token --node-ip=192.168.56.111"
+		control.vm.provision "shell", privileged: false, inline: <<-SHELL
+			export K3S_KUBECONFIG_MODE="644"
+			export K3S_URL="https://192.168.56.110:6443"
+			export KUBECONFIG=/vagrant/k3s.yaml
+			export K3S_TOKEN="acoezardS_password"
+			export INSTALL_K3S_EXEC="--node-ip=192.168.56.111"
 
 			curl -sfL https://get.k3s.io | sh -
 
