@@ -64,6 +64,9 @@ argocd app create wil \
 	--path . \
 	--server localhost:8080
 
+argocd app set wil \
+	--sync-policy automated
+
 argocd app sync wil \
 	--insecure \
 	--server localhost:8080
