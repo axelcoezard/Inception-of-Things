@@ -71,8 +71,18 @@ argocd app create wil \
 	--server localhost:8080
 
 argocd app set wil \
-	--sync-policy automated
+	--sync-policy automated --self-heal --auto-prune
 
 argocd app sync wil \
 	--insecure \
 	--server localhost:8080
+
+ready=$(sudo kubectl get pods -n dev | grep Running | wc -l)
+
+while [ $ready != 1 ]
+do
+    sleep 5
+    ready=$(sudo kubectl get pods -n dev | grep Running | wc -l)
+done
+
+sudo kubectl port-forward svc/wil -n dev 8888:8888 &>/dev/null &
