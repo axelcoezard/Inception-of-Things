@@ -66,7 +66,7 @@ argocd app create wil \
 	--insecure \
 	--repo https://github.com/Kalinololo/asebrech-iot-deploy.git \
 	--dest-server https://kubernetes.default.svc \
-	--dest-namespace argocd \
+	--dest-namespace dev \
 	--path . \
 	--server localhost:8080
 
