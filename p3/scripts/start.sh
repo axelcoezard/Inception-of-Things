@@ -56,6 +56,12 @@ password="inception"
 
 echo -e "${PURPLE}--------- ${YELLOW}Creating \"wil\" app ${PURPLE}---------${ENDCOLOR}"
 
+argocd app delete wil -y \
+	--insecure \
+	--server localhost:8080 &>/dev/null
+
+sleep 5
+
 argocd app create wil \
 	--insecure \
 	--repo https://github.com/Kalinololo/asebrech-iot-deploy.git \
