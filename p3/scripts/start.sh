@@ -32,9 +32,38 @@ done
 echo -e "${PURPLE}--------- ${YELLOW}All pods started. ${PURPLE}---------${ENDCOLOR}"
 echo -e "${PURPLE}--------- ${YELLOW}Forwarding server port ${PURPLE}---------${ENDCOLOR}"
 
-sudo kubectl port-forward -n argocd svc/argocd-server 8080:443 &
+sudo kubectl port-forward -n argocd svc/argocd-server 8080:443 &>/dev/null &
 
 echo -e "${PURPLE}--------- ${YELLOW}You can now connect on localhost:8080 ${PURPLE}---------${ENDCOLOR}"
-echo -e "${PURPLE}--------- ${YELLOW}Default credentials : admin:$(sudo kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d) ${PURPLE}---------${ENDCOLOR}"
 
-argocd app create wil --repo https://github.com/Kalinololo/asebrech-iot-deploy --dest-server https://kubernetes.default.svc --dest-namespace argocd
+username="admin"
+password=$(sudo kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+
+echo -e "${PURPLE}--------- ${YELLOW}Login with default credentials : $username:$password ${PURPLE}---------${ENDCOLOR}"
+
+argocd login localhost:8080 \
+	--insecure \
+	--username $username \
+	--password $password
+
+echo -e "${PURPLE}--------- ${YELLOW}Update password to : inception ${PURPLE}---------${ENDCOLOR}"
+
+argocd account update-password \
+	--current-password $password \
+	--new-password "inception"
+
+password="inception"
+
+echo -e "${PURPLE}--------- ${YELLOW}Creating \"wil\" app ${PURPLE}---------${ENDCOLOR}"
+
+argocd app create wil \
+	--insecure \
+	--repo https://github.com/Kalinololo/asebrech-iot-deploy.git \
+	--dest-server https://kubernetes.default.svc \
+	--dest-namespace argocd \
+	--path . \
+	--server localhost:8080
+
+argocd app sync wil \
+	--insecure \
+	--server localhost:8080
