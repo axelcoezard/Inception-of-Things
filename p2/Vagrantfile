@@ -1,5 +1,11 @@
 Vagrant.configure("2") do |config|
-	config.vm.box = "hashicorp/bionic64"
+	config.vm.box = "centos/7"
+	config.vm.box_url = "https://app.vagrantup.com/centos/boxes/7"
+
+	config.vm.provision "shell", privileged: false, inline: <<-SHELL
+		sudo yum install -y net-tools
+	SHELL
+
 	config.vm.hostname = "lmatarisS"
 	config.vm.provider "virtualbox" do |v|
 		v.name = "lmatarisS"
