@@ -85,4 +85,8 @@ do
     ready=$(sudo kubectl get pods -n dev | grep Running | wc -l)
 done
 
-sudo kubectl port-forward svc/wil -n dev 8888:8888 &>/dev/null &
+while [ true ]
+do
+    sudo kubectl port-forward svc/wil -n dev 8888:8888
+    sleep 5
+done
